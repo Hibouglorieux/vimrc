@@ -9,8 +9,6 @@ set statusline=%F\%=\Line:\ %l\ /\ %L\ -\ Column:\ %v
 set foldnestmax=1
 set shortmess=a
 set switchbuf=usetab,newtab "create new tab when needed
-highlight ExtraWhitespace ctermbg=magenta guibg=red
-match ExtraWhitespace /\s\+$\|  \+\| \t\|\t /
 " Remaps {{{
 let mapleader = " "
 nnoremap <leader>m :Make<CR><CR>
@@ -31,17 +29,26 @@ nnoremap <leader>vsfl :vert bo sfind
 nnoremap <leader>vsfh :vert to sfind 
 nnoremap <leader>vsf :vert sfind 
 nnoremap <leader>sh :sh<CR>
-nnoremap <F12> :Make re<CR>
+nnoremap <F12> :ResetMake<CR><CR>
 nnoremap <leader>h <C-w>h
 nnoremap <leader>j <C-w>j
-nnoremap <leader>l <C-w>k
+nnoremap <leader>k <C-w>k
 nnoremap <leader>l <C-w>l
+nnoremap norme :HighlightExtraSpace<CR>
+nnoremap nnorme :match none ExtraWhitespace<CR> 
+command! -nargs=0 HighlightExtraSpace 
+			\ highlight ExtraWhitespace ctermbg=magenta guibg=red'
+			\ | match ExtraWhitespace /\s\+$\|  \+\| \t\|\t /
 command! -nargs=+ Silent
 			\ execute 'silent <args>'
 			\ | redraw!
 command! -nargs=* Make
 			\ silent make <args>
 			\ | bo cwindow 5
+			\ | redraw!
+command! -nargs=* ResetMake
+			\ silent! make re >/dev/null
+			\ | bo cw 10
 			\ | redraw!
 " }}}
 " Abbrev {{{
@@ -60,6 +67,8 @@ command! -nargs=* Make
 "
 :function! Get_end_char(i)
 if expand('%:e') ==? 'c'
+	return ' */'
+elseif expand('%:e') ==? 'h'
 	return ' */'
 elseif stridx(expand('%'), 'vim') != -1
 	if a:i == 0
@@ -82,6 +91,8 @@ endif
 
 :function! Get_start_char(i)
 if expand('%:e') ==? 'c'
+	return '/* '
+elseif expand('%:e') ==? 'h'
 	return '/* '
 elseif stridx(expand('%'), 'vim') != -1
 	if a:i == 0
@@ -238,7 +249,7 @@ endif
 "}}}
 
 :function! Header()
-if ((Check_header()))
+if ((oheck_header()))
 	return
 endif
 let l:oldpos = getcurpos()
