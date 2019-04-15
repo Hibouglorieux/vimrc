@@ -16,7 +16,7 @@ let mapleader = " "
 nnoremap <leader>m :Make<CR><CR>
 " second<CR> is made to quit the cwindow
 nnoremap <leader>. :Silent !./doom-nukem<CR>
-nnoremap <leader>vi :tabnew $MYVIMRC<CR>
+nnoremap <leader>vi :e $MYVIMRC<CR>
 nnoremap <leader>re :source $MYVIMRC<CR>
 nnoremap <leader>source :source $MYVIMRC<CR>
 nnoremap <leader>n :tabnew .<CR>
@@ -32,6 +32,10 @@ nnoremap <leader>vsfh :vert to sfind
 nnoremap <leader>vsf :vert sfind 
 nnoremap <leader>sh :sh<CR>
 nnoremap <F12> :Make re<CR>
+nnoremap <leader>h <C-w>h
+nnoremap <leader>j <C-w>j
+nnoremap <leader>l <C-w>k
+nnoremap <leader>l <C-w>l
 command! -nargs=+ Silent
 			\ execute 'silent <args>'
 			\ | redraw!
