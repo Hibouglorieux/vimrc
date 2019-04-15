@@ -7,12 +7,15 @@ set path +=**
 set wildmenu
 set statusline=%F\%=\Line:\ %l\ /\ %L\ -\ Column:\ %v
 set foldnestmax=1
+set shortmess=a
+set switchbuf=usetab,newtab "create new tab when needed
 highlight ExtraWhitespace ctermbg=magenta guibg=red
 match ExtraWhitespace /\s\+$\|  \+\| \t\|\t /
-" Remaps  {{{
+" Remaps {{{
 let mapleader = " "
-nnoremap <leader>m :!make<CR>
-nnoremap <leader>. :!./doom-nukem<CR>
+nnoremap <leader>m :Make<CR><CR>
+" second<CR> is made to quit the cwindow
+nnoremap <leader>. :Silent !./doom-nukem<CR>
 nnoremap <leader>vi :tabnew $MYVIMRC<CR>
 nnoremap <leader>re :source $MYVIMRC<CR>
 nnoremap <leader>source :source $MYVIMRC<CR>
@@ -26,9 +29,18 @@ nnoremap <leader>vsl :vert botright split
 nnoremap <leader>vsh :vert topleft split 
 nnoremap <leader>vsfl :vert bo sfind 
 nnoremap <leader>vsfh :vert to sfind 
-nnoremap <leader>vsf :vert  sfind 
+nnoremap <leader>vsf :vert sfind 
+nnoremap <leader>sh :sh<CR>
+nnoremap <F12> :Make re<CR>
+command! -nargs=+ Silent
+			\ execute 'silent <args>'
+			\ | redraw!
+command! -nargs=* Make
+			\ silent make <args>
+			\ | bo cwindow 5
+			\ | redraw!
 " }}}
-" Abbrev  {{{
+" Abbrev {{{
 :iabbrev cahr char
 :iabbrev itn int
 :iabbrev tf ft
@@ -44,7 +56,7 @@ nnoremap <leader>vsf :vert  sfind
 "
 :function! Get_end_char(i)
 if expand('%:e') ==? 'c'
-		return ' */'
+	return ' */'
 elseif stridx(expand('%'), 'vim') != -1
 	if a:i == 0
 		return '* "'
@@ -211,7 +223,7 @@ let l:start_char = Get_start_char(8)
 let l:end_char = Get_end_char(8)
 let l:sentence = '  Updated: ' . strftime("%Y/%m/%d %T ") . 'by ' . $USER . Space_size_time_2(). '###   ########.fr      '
 if a:i
-:9delete
+	:9delete
 endif
 silent call append(8, l:start_char . l:sentence . l:end_char)
 if a:i
