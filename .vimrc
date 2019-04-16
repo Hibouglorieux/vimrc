@@ -5,7 +5,7 @@ colo torte
 set ruler
 set path +=**
 set wildmenu
-set statusline=%F\%=\Line:\ %l\ /\ %L\ -\ Column:\ %v
+set statusline=%f\ \%m\%=\Line:\ %l\ /\ %L\ -\ Column:\ %v
 set foldnestmax=1
 set shortmess=a
 set switchbuf=usetab,newtab "create new tab when needed
@@ -34,6 +34,14 @@ nnoremap <leader>h <C-w>h
 nnoremap <leader>j <C-w>j
 nnoremap <leader>k <C-w>k
 nnoremap <leader>l <C-w>l
+nnoremap <leader>H <C-w>H
+nnoremap <leader>J <C-w>J
+nnoremap <leader>K <C-w>K
+nnoremap <leader>L <C-w>L
+nnoremap <leader>gita :silent !git add .<CR>
+nnoremap <leader>gitac :silent !git add .<CR>:!git commit -m "
+nnoremap <leader>gitc :!git commit -m "
+nnoremap <leader>gitp :!git push<CR>
 nnoremap norme :HighlightExtraSpace<CR>
 nnoremap nnorme :match none ExtraWhitespace<CR> 
 command! -nargs=0 HighlightExtraSpace 
@@ -47,7 +55,7 @@ command! -nargs=* Make
 			\ | bo cwindow 5
 			\ | redraw!
 command! -nargs=* ResetMake
-			\ silent! make re >/dev/null
+			\ silent exe 'make re'
 			\ | bo cw 10
 			\ | redraw!
 " }}}
@@ -249,7 +257,7 @@ endif
 "}}}
 
 :function! Header()
-if ((oheck_header()))
+if ((Check_header()))
 	return
 endif
 let l:oldpos = getcurpos()
@@ -281,6 +289,6 @@ augroup END
 augroup headers
 	autocmd!
 	:autocmd BufNewFile *.c :call Header()
-	:autocmd BufWrite * :silent call Refresh_date_Header(1)
+"	:autocmd BufWritePre * :silent call Refresh_date_Header(1)
 augroup END
 " }}}
