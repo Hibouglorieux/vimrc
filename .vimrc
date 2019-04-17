@@ -39,10 +39,10 @@ nnoremap <leader>J <C-w>J
 nnoremap <leader>K <C-w>K
 nnoremap <leader>L <C-w>L
 nnoremap <leader>() viw<esc>a)<esc>bi(<esc>lel
-nnoremap <leader>gita :silent !git add .<CR>
+nnoremap <leader>gita :Silent !git add .<CR>
 nnoremap <leader>gitac :silent !git add .<CR>:!git commit -m "
 nnoremap <leader>gitc :!git commit -m "
-nnoremap <leader>gitp :!git push<CR>
+nnoremap <leader>gitp :Redraw !git push<CR>
 nnoremap norme :HighlightExtraSpace<CR>
 nnoremap nnorme :match none ExtraWhitespace<CR> 
 command! -nargs=0 HighlightExtraSpace 
@@ -58,6 +58,9 @@ command! -nargs=* Make
 command! -nargs=* ResetMake
 			\ silent exe 'make re'
 			\ | bo cw 10
+			\ | redraw!
+command! -nargs=* Redraw
+			\ execute '<args>'
 			\ | redraw!
 " }}}
 " Abbrev {{{
