@@ -38,6 +38,7 @@ nnoremap <leader>H <C-w>H
 nnoremap <leader>J <C-w>J
 nnoremap <leader>K <C-w>K
 nnoremap <leader>L <C-w>L
+nnoremap <leader>() viw<esc>a)<esc>bi(<esc>lel
 nnoremap <leader>gita :silent !git add .<CR>
 nnoremap <leader>gitac :silent !git add .<CR>:!git commit -m "
 nnoremap <leader>gitc :!git commit -m "
