@@ -44,8 +44,12 @@ nnoremap <leader>gitac :silent !git add .<CR>:!git commit -m "
 nnoremap <leader>gitc :!git commit -m "
 nnoremap <leader>gitp :Redraw !git push<CR>
 nnoremap <leader>gf :execute 'find ' . expand('<cword>') . '.c'<CR>
+nnoremap <leader>gfl :execute 'vert botright sfind ' . expand('<cword>') . '.c'<CR>
+nnoremap <leader>gfh :execute 'vert topleft sfind ' . expand('<cword>') . '.c'<CR>
 nnoremap <leader>gfvsl :execute 'vert botright sfind ' . expand('<cword>') . '.c'<CR>
 nnoremap <leader>gfvsh :execute 'vert topleft sfind ' . expand('<cword>') . '.c'<CR>
+nnoremap <leader>gfvs :execute 'vert sfind ' . expand('<cword>') . '.c'<CR>
+nnoremap <leader>gfn :execute 'tabf ' . expand('<cword>') . '.c'<CR>
 nnoremap norme :HighlightExtraSpace<CR>
 nnoremap nnorme :match none ExtraWhitespace<CR> 
 command! -nargs=0 HighlightExtraSpace 
