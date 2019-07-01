@@ -11,9 +11,15 @@ set shortmess=a
 set switchbuf=usetab,newtab "create new tab when needed
 " Remaps {{{
 let mapleader = " "
-nnoremap <leader>m :Make<CR><CR>
+nnoremap <leader>m :Make<CR>
 " second<CR> is made to quit the cwindow
+vnoremap <leader>cp :w !pbcopy<CR>
+vnoremap <leader>se "sy/\V<C-r>=escape(@s,'/\')<CR><CR>
+vnoremap <leader>re "ry:%s/<C-r>r/
+vnoremap <leader>add "ry:%s/\(<C-r>r\)/\1
 nnoremap <leader>. :Silent !./doom-nukem<CR>
+nnoremap <leader>norm :setlocal colorcolumn=81<CR>
+nnoremap <leader>e :Silent !./editor<CR>
 nnoremap <leader>vi :e $MYVIMRC<CR>
 nnoremap <leader>re :source $MYVIMRC<CR>
 nnoremap <leader>source :source $MYVIMRC<CR>
@@ -30,6 +36,7 @@ nnoremap <leader>vsfh :vert to sfind
 nnoremap <leader>vsf :vert sfind 
 nnoremap <leader>sh :sh<CR>
 nnoremap <F12> :ResetMake<CR><CR>
+nnoremap <leader>php :execute '!./' . expand("%")<CR>
 nnoremap <leader>h <C-w>h
 nnoremap <leader>j <C-w>j
 nnoremap <leader>k <C-w>k
@@ -52,6 +59,9 @@ nnoremap <leader>gfvs :execute 'vert sfind ' . expand('<cword>') . '.c'<CR>
 nnoremap <leader>gfn :execute 'tabf ' . expand('<cword>') . '.c'<CR>
 nnoremap norme :HighlightExtraSpace<CR>
 nnoremap nnorme :match none ExtraWhitespace<CR> 
+nnoremap <leader>open :execute "!open " . expand('%')<CR><CR>
+nnoremap <leader>go :execute '!go build ' . expand('%')<CR>
+nnoremap <leader><CR> :execute '!' .expand('%:p:r')<CR>
 command! -nargs=0 HighlightExtraSpace 
 			\ highlight ExtraWhitespace ctermbg=magenta guibg=red'
 			\ | match ExtraWhitespace /\s\+$\|  \+\| \t\|\t /
@@ -78,7 +88,6 @@ command! -nargs=* Redraw
 :iabbrev crah char
 :iabbrev shotr short
 :iabbrev srt str
-:iabbrev main int	main(int argc, char **argv)
 " }}}
 
 " Header Func {{{
@@ -285,13 +294,26 @@ while (i < l:lines)
 endwhile
 silent call cursor(l:oldpos[1] + 12, l:oldpos[2])
 :endf
+" }}}o
+" Php func {{{
+:function! Php_func()
+call append(0, "<?PHP")
+call append(1, "")
+call append(2, "?>")
+:endf
 " }}}
 
 " Autocmd {{{
+augroup php_files
+	au! BufNewFile *php :call Php_func()
+	au! BufWrite *php execute "!chmod 755 " . expand('%') . ' &'
+	au! FileType *php setlocal foldmethod=indent
+augroup END
 augroup c_files
 	au!
 	au FileType c setlocal foldmethod=syntax
 	au FileType cpp setlocal foldmethod=syntax
+	au Filetype go setlocal foldmethod=syntax
 augroup END
 augroup filetype_vim
 	autocmd!
@@ -300,6 +322,6 @@ augroup END
 augroup headers
 	autocmd!
 	:autocmd BufNewFile *.c :call Header()
-"	:autocmd BufWritePre * :silent call Refresh_date_Header(1)
+	"	:autocmd BufWritePre * :silent call Refresh_date_Header(1)
 augroup END
 " }}}
