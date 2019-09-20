@@ -28,6 +28,8 @@ nnoremap <tab> :tabnext<CR>
 nnoremap <S-tab> :tabp<CR>
 inoremap jk <esc>
 nnoremap <C-c><C-h> :call Header()<CR>
+nnoremap <F1> :call Header()<CR>
+nnoremap <leader>class :call Create_class()<CR>
 nnoremap <leader>vs :vert split 
 nnoremap <leader>vsl :vert botright split 
 nnoremap <leader>vsh :vert topleft split 
@@ -94,9 +96,9 @@ command! -nargs=* Redraw
 " Small func {{{
 "
 :function! Get_end_char(i)
-if expand('%:e') ==? 'c'
+if expand('%:e') ==? 'c' || expand('%:e') ==? 'cpp'
 	return ' */'
-elseif expand('%:e') ==? 'h'
+elseif expand('%:e') ==? 'h' || expand('%:e') ==? 'hpp'
 	return ' */'
 elseif stridx(expand('%'), 'vim') != -1
 	if a:i == 0
@@ -118,9 +120,9 @@ endif
 :endf
 
 :function! Get_start_char(i)
-if expand('%:e') ==? 'c'
+if expand('%:e') ==? 'c' || expand('%:e') ==? 'cpp'
 	return '/* '
-elseif expand('%:e') ==? 'h'
+elseif expand('%:e') ==? 'h' || expand('%:e') ==? 'hpp'
 	return '/* '
 elseif stridx(expand('%'), 'vim') != -1
 	if a:i == 0
@@ -294,7 +296,23 @@ while (i < l:lines)
 endwhile
 silent call cursor(l:oldpos[1] + 12, l:oldpos[2])
 :endf
-" }}}o
+" }}}
+" {{{ cpp class
+:function! Create_class()
+let name = expand('<cword>:h')
+call append(line('$'), '#ifndef ' . toupper(name) . '_CLASS_H')
+call append(line('$'), '# define ' . toupper(name) . '_CLASS_H')
+call append(line('$'), '')
+call append(line('$'), 'class ' . name . ' {')
+call append(line('$'), 'public:')
+call append(line('$'), "\t" . name . '::' . name . '(void);')
+call append(line('$'), "\t" . name . '::~' . name . '(void);')
+call append(line('$'), 'private:')
+call append(line('$'), '};')
+call append(line('$'), '')
+call append(line('$'), '#endif')
+:endf
+" }}}
 " Php func {{{
 :function! Php_func()
 call append(0, "<?PHP")
@@ -321,8 +339,8 @@ augroup filetype_vim
 augroup END
 augroup headers
 	autocmd!
-	:autocmd BufNewFile *.c :call Header()
-	"	:autocmd BufWritePre * :silent call Refresh_date_Header(1)
+	:autocmd BufNewFile *.c,*.*pp :call Header()
+	:autocmd BufWritePre *.c,*.*pp,*.h :silent call Refresh_date_Header(1)
 augroup END
 " }}}
 " vimrc ecole
