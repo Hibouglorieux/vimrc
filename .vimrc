@@ -9,15 +9,20 @@ set statusline=%f\ \%m\%=\Line:\ %l\ /\ %L\ -\ Column:\ %v
 set foldnestmax=1
 set shortmess=a
 set switchbuf=usetab,newtab "create new tab when needed
+set viminfo='1000,f1
+set tags=vimtagfile
+let tagfile='vimtagfile'
+set keywordprg=:help
+set suffixesadd=.h,.cpp
+set complete=.,w,b,u,i
 " Remaps {{{
 let mapleader = " "
-nnoremap <leader>m :Make<CR>
 " second<CR> is made to quit the cwindow
 vnoremap <leader>cp :w !pbcopy<CR>
 vnoremap <leader>se "sy/\V<C-r>=escape(@s,'/\')<CR><CR>
+nnoremap <leader>se viw"sy/\V<C-r>=escape(@s,'/\')<CR><CR>
 vnoremap <leader>re "ry:%s/<C-r>r/
 vnoremap <leader>add "ry:%s/\(<C-r>r\)/\1
-nnoremap <leader>. :Silent !./doom-nukem<CR>
 nnoremap <leader>norm :setlocal colorcolumn=81<CR>
 nnoremap <leader>e :Silent !./editor<CR>
 nnoremap <leader>vi :e $MYVIMRC<CR>
@@ -25,8 +30,11 @@ nnoremap <leader>re :source $MYVIMRC<CR>
 nnoremap <leader>source :source $MYVIMRC<CR>
 nnoremap <leader>n :tabnew .<CR>
 nnoremap <tab> :tabnext<CR>
+vnoremap <leader>def "sy:psearch <C-R> s<CR>
+nnoremap <leader>def :psearch <C-R><C-W><CR>
 nnoremap <S-tab> :tabp<CR>
 inoremap jk <esc>
+nnoremap <leader>ls :ls<CR>
 nnoremap <C-c><C-h> :call Header()<CR>
 nnoremap <F1> :call Header()<CR>
 nnoremap <leader>class :call Create_class()<CR>
@@ -38,7 +46,6 @@ nnoremap <leader>vsfh :vert to sfind
 nnoremap <leader>vsf :vert sfind 
 nnoremap <leader>sh :sh<CR>
 nnoremap <F12> :ResetMake<CR><CR>
-nnoremap <leader>php :execute '!./' . expand("%")<CR>
 nnoremap <leader>h <C-w>h
 nnoremap <leader>j <C-w>j
 nnoremap <leader>k <C-w>k
@@ -47,16 +54,19 @@ nnoremap <leader>H <C-w>H
 nnoremap <leader>J <C-w>J
 nnoremap <leader>K <C-w>K
 nnoremap <leader>L <C-w>L
+nnoremap <F3> :set noh!<CR>
+nnoremap <leader>head :e %:r.h<CR>
+nnoremap <leader>class :e %:r.cpp<CR>
 nnoremap <leader>() viw<esc>a)<esc>bi(<esc>lel
 nnoremap <leader>gita :Silent !git add .<CR>
 nnoremap <leader>gitac :silent !git add .<CR>:!git commit -m "
 nnoremap <leader>gitc :!git commit -m "
 nnoremap <leader>gitp :Redraw !git push<CR>
-nnoremap <leader>gf :execute 'find ' . expand('<cword>') . '.c'<CR>
-nnoremap <leader>gfl :execute 'vert botright sfind ' . expand('<cword>') . '.c'<CR>
-nnoremap <leader>gfh :execute 'vert topleft sfind ' . expand('<cword>') . '.c'<CR>
-nnoremap <leader>gfvsl :execute 'vert botright sfind ' . expand('<cword>') . '.c'<CR>
-nnoremap <leader>gfvsh :execute 'vert topleft sfind ' . expand('<cword>') . '.c'<CR>
+nnoremap <leader>gf :execute 'find ' . expand('<cword>') . '.cpp'<CR>
+nnoremap <leader>gfl :execute 'vert botright sfind ' . expand('<cword>') . '.h'<CR>
+nnoremap <leader>gfh :execute 'vert topleft sfind ' . expand('<cword>') . '.h'<CR>
+nnoremap <leader>gfvsl :execute 'vert botright sfind ' . expand('<cword>') . '.h'<CR>
+nnoremap <leader>gfvsh :execute 'vert topleft sfind ' . expand('<cword>') . '.h'<CR>
 nnoremap <leader>gfvs :execute 'vert sfind ' . expand('<cword>') . '.c'<CR>
 nnoremap <leader>gfn :execute 'tabf ' . expand('<cword>') . '.c'<CR>
 nnoremap <leader>norme :HighlightExtraSpace<CR>
@@ -321,7 +331,37 @@ call append(2, "?>")
 :endf
 " }}}
 
+" Ctags func {{{
+function! CtagsExit(cwd, job_id, exit_code)
+    if a:exit_code == 0
+        call rename(a:cwd . '/newtags', a:cwd . '/.tags')
+        echo "Ctags finished with 0"
+    else
+        echo "Ctags finished with " . a:exit_code . " (execute :messages to see output)"
+    endif
+endfunction
+
+function! CtagsOutput(channel, data)
+    echomsg a:data
+endfunction
+
+function! CtagsStartup()
+    let cmdline='/usr/local/bin/ctags -R --c++-kinds=+p --fields=+iaS --extra=+q --language-force=C++ -o vimtagfile'
+    let options = {
+                \   'in_io': "null",
+                \   'out_cb': "CtagsOutput",
+                \   'err_cb': "CtagsOutput",
+                \   'exit_cb': function('CtagsExit', [ getcwd() ])
+                \ }
+    call job_start(cmdline, options)
+endfunction
+
 " Autocmd {{{
+augroup path_files
+    au! BufRead *
+                \ let s:tempPath=escape(escape(expand("%:p:h"), ' '), '\ ') |
+                \ exec "set path+=".s:tempPath
+augroup END
 augroup php_files
 	au! BufNewFile *php :call Php_func()
 	au! BufWrite *php execute "!chmod 755 " . expand('%') . ' &'
@@ -329,19 +369,25 @@ augroup php_files
 augroup END
 augroup c_files
 	au!
-	au FileType c setlocal foldmethod=syntax
-	au FileType cpp setlocal foldmethod=syntax
-	au Filetype go setlocal foldmethod=syntax
+    au BufRead,BufNewFile *.c setl filetype=c
+    au BufRead,BufNewFile *.cpp,*.h,*.hpp,*.tpp setl filetype=cpp11
+    au BufRead,BufNewFile *.cpp,*.h,*.hpp,*.tpp setl syntax=cpp11
+	au FileType c,cpp,cpp11,go setlocal foldmethod=syntax
 augroup END
 augroup filetype_vim
 	autocmd!
 	autocmd FileType vim setlocal foldmethod=marker
 augroup END
-augroup headers
-	autocmd!
-	:autocmd BufNewFile *.c,*.*pp :call Header()
-	:autocmd BufWritePre *.c,*.*pp,*.h :silent call Refresh_date_Header(1)
+augroup ctags
+    autocmd!
+    autocmd VimEnter * call CtagsStartup()
+    autocmd VimLeave * set modifiable | call delete(tagfile)
 augroup END
+"augroup headers
+"	autocmd!
+"	:autocmd BufNewFile *.c,*.*pp :call Header()
+"	:autocmd BufWritePre *.c,*.*pp,*.h :silent call Refresh_date_Header(1)
+"augroup END
 " }}}
 " vimrc ecole
 " **************************************************************************** "
@@ -367,7 +413,7 @@ set smartindent
 "Non-expanded, 4-wide tabulations
 set tabstop=4
 set shiftwidth=4
-set noexpandtab
+set expandtab
 
 "Disable vi-compatibility
 set nocompatible
