@@ -435,22 +435,25 @@ augroup previewWindow
     autocmd!
     autocmd WinEnter * call HandleWinEnter()
 augroup END
-""
-"function! MatchAllWord()
-"    let Word_To_highlight = expand('<cword>')
-"    let OldWord
-"    execute "match" . " Special " . "/" . Word_To_highlight . "/"
-"    call match Special 
-""
-""augroup highlightWord
-"    autocmd!
-"    autocmd CursorMoved *.c,*.cpp,*.h call MatchAllWord()
-""augroup END
-"augroup headers
-"	autocmd!
-"	:autocmd BufNewFile *.c,*.*pp :call Header()
-"	:autocmd BufWritePre *.c,*.*pp,*.h :silent call Refresh_date_Header(1)
-"augroup END
+"
+:function! MatchAllWord()
+    let Word_To_highlight = expand('<cword>')
+	if ((matchstr(Word_To_highlight[0], '[a-zA-Z_]')) == "")
+        execute "match" . " Special //"
+		return
+	endif
+    execute "match" . " Special " . "/\\<" . Word_To_highlight . "\\>/"
+:endf
+augroup highlightWord
+    autocmd!
+    autocmd CursorMoved *.c,*.cpp,*.h call MatchAllWord()
+augroup END
+augroup headers
+	autocmd!
+	:autocmd BufNewFile *.c,*.*pp :call Header()
+	:autocmd BufWritePre *.c,*.*pp,*.h :silent call Refresh_date_Header(1)
+augroup END
+
 " }}}
 " vimrc ecole
 " **************************************************************************** "
