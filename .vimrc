@@ -1,3 +1,30 @@
+set nocompatible              " be iMproved, required
+filetype off                  " required
+
+" set the runtime path to include Vundle and initialize
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+" alternatively, pass a path where Vundle should install plugins
+"call vundle#begin('~/some/path/here')
+
+" let Vundle manage Vundle, required
+Plugin 'VundleVim/Vundle.vim'
+
+" All of your Plugins must be added before the following line
+call vundle#end()            " required
+filetype plugin indent on    " required
+" To ignore plugin indent changes, instead use:
+"filetype plugin on
+"
+" Brief help
+" :PluginList       - lists configured plugins
+" :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
+" :PluginSearch foo - searches for foo; append `!` to refresh local cache
+" :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
+"
+" see :h vundle for more details or wiki for FAQ
+" Put your non-Plugin stuff after this line
+
 syntax on
 set number
 set mouse=a
@@ -8,9 +35,25 @@ set wildmenu
 set statusline=%f\ \%m\%=\Line:\ %l\ /\ %L\ -\ Column:\ %v
 set foldnestmax=1
 set shortmess=a
+set omnifunc=omni#cpp#complete#Main
+set completefunc=omni#cpp#complete#Main
+
+" OmniCppComplete
+let OmniCpp_NamespaceSearch = 1
+let OmniCpp_GlobalScopeSearch = 1
+let OmniCpp_ShowAccess = 1
+let OmniCpp_ShowPrototypeInAbbr = 1 " show function parameters
+let OmniCpp_MayCompleteDot = 1 " autocomplete after .
+let OmniCpp_MayCompleteArrow = 1 " autocomplete after ->
+let OmniCpp_MayCompleteScope = 1 " autocomplete after ::
+let OmniCpp_DefaultNamespaces = ["std", "_GLIBCXX_STD"]
+" automatically open and close the popup menu / preview window
+au CursorMovedI,InsertLeave * if pumvisible() == 0|silent! pclose|endif
+set completeopt=menuone,menu,longest,preview
+"
 set switchbuf=usetab,newtab "create new tab when needed
 set viminfo='1000,f1
-set tags=vimtagfile
+set tags=vimtagfile,~/.vim/tags/cpp
 let tagfile='vimtagfile'
 set keywordprg=:help
 set suffixesadd=.h,.cpp
@@ -54,7 +97,7 @@ nnoremap <leader>H <C-w>H
 nnoremap <leader>J <C-w>J
 nnoremap <leader>K <C-w>K
 nnoremap <leader>L <C-w>L
-nnoremap <F3> :set noh!<CR>
+nnoremap <F3> :set noh<CR>
 nnoremap <leader>head :e %:r.h<CR>
 nnoremap <leader>class :e %:r.cpp<CR>
 nnoremap <leader>() viw<esc>a)<esc>bi(<esc>lel
@@ -370,8 +413,8 @@ augroup END
 augroup c_files
 	au!
     au BufRead,BufNewFile *.c setl filetype=c
-    au BufRead,BufNewFile *.cpp,*.h,*.hpp,*.tpp setl filetype=cpp11
-    au BufRead,BufNewFile *.cpp,*.h,*.hpp,*.tpp setl syntax=cpp11
+    au BufRead,BufNewFile *.cpp,*.h,*.hpp,*.tpp setl filetype=cpp
+    au BufRead,BufNewFile *.cpp,*.h,*.hpp,*.tpp setl syntax=cpp
 	au FileType c,cpp,cpp11,go setlocal foldmethod=syntax
 augroup END
 augroup filetype_vim
@@ -383,6 +426,17 @@ augroup ctags
     autocmd VimEnter * call CtagsStartup()
     autocmd VimLeave * set modifiable | call delete(tagfile)
 augroup END
+""
+"function! MatchAllWord()
+"    let Word_To_highlight = expand('<cword>')
+"    let OldWord
+"    execute "match" . " Special " . "/" . Word_To_highlight . "/"
+"    call match Special 
+""
+""augroup highlightWord
+"    autocmd!
+"    autocmd CursorMoved *.c,*.cpp,*.h call MatchAllWord()
+""augroup END
 "augroup headers
 "	autocmd!
 "	:autocmd BufNewFile *.c,*.*pp :call Header()
