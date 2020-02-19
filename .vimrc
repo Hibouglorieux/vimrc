@@ -57,7 +57,7 @@ set tags=vimtagfile,~/.vim/tags/cpp
 let tagfile='vimtagfile'
 set keywordprg=:help
 set suffixesadd=.h,.cpp
-set complete=.,w,b,u,i
+set complete=.,w,b
 " Remaps {{{
 let mapleader = " "
 " second<CR> is made to quit the cwindow
@@ -399,6 +399,11 @@ function! CtagsStartup()
     call job_start(cmdline, options)
 endfunction
 
+function! HandleWinEnter()
+    if &previewwindow
+        setlocal syntax=cpp
+    endif
+endfunction
 " Autocmd {{{
 augroup path_files
     au! BufRead *
@@ -425,6 +430,10 @@ augroup ctags
     autocmd!
     autocmd VimEnter * call CtagsStartup()
     autocmd VimLeave * set modifiable | call delete(tagfile)
+augroup END
+augroup previewWindow
+    autocmd!
+    autocmd WinEnter * call HandleWinEnter()
 augroup END
 ""
 "function! MatchAllWord()
