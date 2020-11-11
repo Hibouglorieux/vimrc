@@ -26,6 +26,7 @@ nnoremap <leader>source :source $MYVIMRC<CR>
 nnoremap <leader>n :tabnew .<CR>
 nnoremap <tab> :tabnext<CR>
 nnoremap <S-tab> :tabp<CR>
+nnoremap <F3> :noh<CR>
 inoremap jk <esc>
 nnoremap <C-c><C-h> :call Header()<CR>
 nnoremap <F1> :call Header()<CR>
