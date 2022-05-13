@@ -30,7 +30,9 @@ nnoremap <F3> :noh<CR>
 inoremap jk <esc>
 nnoremap <C-c><C-h> :call Header()<CR>
 nnoremap <F1> :call Header()<CR>
-nnoremap <leader>class :call Create_class()<CR>
+nnoremap <leader>Class :call Create_class()<CR>
+nnoremap <leader>class :e %:r.cpp<CR>
+nnoremap <leader>head :e %:r.hpp<CR>
 nnoremap <leader>vs :vert split 
 nnoremap <leader>vsl :vert botright split 
 nnoremap <leader>vsh :vert topleft split 
@@ -66,7 +68,7 @@ nnoremap <leader>open :execute "!open " . expand('%')<CR><CR>
 nnoremap <leader>go :execute '!go build ' . expand('%')<CR>
 nnoremap <leader><CR> :execute '!' .expand('%:p:r')<CR>
 command! -nargs=0 HighlightExtraSpace 
-			\ highlight ExtraWhitespace ctermbg=magenta guibg=red'
+			\ highlight ExtraWhitespace ctermbg=magenta guibg=red
 			\ | match ExtraWhitespace /\s\+$\|  \+\| \t\|\t /
 command! -nargs=+ Silent
 			\ execute 'silent <args>'
@@ -99,7 +101,7 @@ command! -nargs=* Redraw
 :function! Get_end_char(i)
 if expand('%:e') ==? 'c' || expand('%:e') ==? 'cpp'
 	return ' */'
-elseif expand('%:e') ==? 'h' || expand('%:e') ==? 'hpp'
+elseif expand('%:e') ==? 'h' || expand('%:e') ==? 'hpp' || expand('%:e') ==? 'tpp'
 	return ' */'
 elseif stridx(expand('%'), 'vim') != -1
 	if a:i == 0
@@ -123,7 +125,7 @@ endif
 :function! Get_start_char(i)
 if expand('%:e') ==? 'c' || expand('%:e') ==? 'cpp'
 	return '/* '
-elseif expand('%:e') ==? 'h' || expand('%:e') ==? 'hpp'
+elseif expand('%:e') ==? 'h' || expand('%:e') ==? 'hpp' || expand('%:e') ==? 'tpp'
 	return '/* '
 elseif stridx(expand('%'), 'vim') != -1
 	if a:i == 0
@@ -190,7 +192,7 @@ return l:spaces
 :function! Set_line(begin, ending, i)
 let l:mail = $MAIL
 if strlen(l:mail) < 5
-	let l:mail = "unkown@noaddress.com"
+	let l:mail = "nallani@42.fr"
 endif
 let l:full = '**************************************************************************'
 let l:space = '                                                                          '
@@ -264,17 +266,21 @@ if (a:i == 1)
 		return
 	endif
 endif
+let l:line = line("w0")
 let l:pos = getcurpos()
 let l:start_char = Get_start_char(8)
 let l:end_char = Get_end_char(8)
 let l:sentence = '  Updated: ' . strftime("%Y/%m/%d %T ") . 'by ' . $USER . Space_size_time_2(). '###   ########.fr      '
 if a:i
+	:let @x=@"
 	:9delete
 endif
 silent call append(8, l:start_char . l:sentence . l:end_char)
 if a:i
 	silent call Refresh_file_header()
+	:execute "normal ". l:line . 'z'
 	silent call cursor(l:pos[1], l:pos[2])
+	:let @"=@x
 endif
 :endf
 "}}}
@@ -330,6 +336,7 @@ augroup php_files
 augroup END
 augroup c_files
 	au!
+	au BufNewFile,BufRead ,*.tpp setlocal filetype=cpp
 	au FileType c setlocal foldmethod=syntax
 	au FileType cpp setlocal foldmethod=syntax
 	au Filetype go setlocal foldmethod=syntax
