@@ -1,0 +1,92 @@
+set number
+set backspace=indent,eol,start "to be able to delete without inserting 'Backspace()'
+set clipboard=unnamed "make it work with VS
+set visualbell
+"autocmd BufWinEnter * cd %:p:h
+autocmd BufEnter * cd %:p:h
+cd! %:p:h
+" Remaps {{{
+let mapleader = " "
+
+" second<CR> is made to quit the cwindow
+
+"press esc to quit errorlist or shift+esc to quit
+nnoremap <leader>j :vsc View.ErrorList<CR>
+nnoremap <leader>n :vsc View.SolutionExplorer<CR>
+nnoremap <tab> :vsc Window.NextTab<CR>
+nnoremap <S-tab> :vsc Window.PreviousTab<CR>
+
+nnoremap <leader>m :vsc Build.BuildSelection<CR>
+
+nnoremap <leader><tab> :tabnext<CR>
+nnoremap <leader><S-tab> :tabp<CR>
+
+nnoremap <leader>H :vsc Window.MovetoPreviousTabGroup<CR>
+nnoremap <leader>L :vsc Window.MovetoNextTabGroup<CR>
+
+nnoremap <leader>gc :vsc Edit.GoToDeclaration<CR>
+nnoremap <leader>gh :vsc Edit.GoToDefinition<CR>
+
+"weird behaviour
+nnoremap <leader>vs :vs ""<left>
+nnoremap <leader>vsh :vsc EditorContextMenus.Navigate.ToggleHeaderCodeFile<CR>
+"nnoremap <leader>vsl :vs ""<left>
+
+vnoremap <leader>cp :w !pbcopy<CR>
+vnoremap <leader>se "sdP/\V<C-r>s<CR>
+vnoremap <leader>re "ry:%s/<C-r>r/
+vnoremap <leader>add "ry:%s/\(<C-r>r\)/\1
+nnoremap <leader>vi :e $MYVIMRC<CR>
+nnoremap <leader>re :source ~/vsvimrc<CR>
+nnoremap <leader>source :source $MYVIMRC<CR>
+nnoremap <F3> :noh<CR>
+inoremap jk <esc>
+nnoremap <C-c><C-h> :call Header()<CR>
+nnoremap <F1> :call Header()<CR>
+nnoremap <leader>class :call Create_class()<CR>
+nnoremap <leader>sh :sh<CR>
+nnoremap <F12> :ResetMake<CR><CR>
+nnoremap <leader>php :execute '!./' . expand("%")<CR>
+nnoremap <leader>h <C-w>h
+nnoremap <leader>k <C-w>k
+nnoremap <leader>l <C-w>l
+nnoremap <leader>() viw<esc>a)<esc>bi(<esc>lel
+" Abbrev {{{
+:iabbrev cahr char
+:iabbrev itn int
+:iabbrev tf ft
+:iabbrev carh char
+:iabbrev crah char
+:iabbrev shotr short
+:iabbrev srt str
+" }}}
+
+
+
+"Non-expanded, 4-wide tabulations
+set tabstop=4
+set shiftwidth=4
+set noexpandtab
+
+"Disable vi-compatibility
+
+"Real-world encoding
+
+"Interpret modelines in files
+set modelines=1
+
+"Do not abandon buffers
+
+"Don't bother throttling tty
+
+"More useful backspace behavior
+set backspace=indent,eol,start
+
+"Use statusbar on all windows
+set laststatus=2
+
+"Better search
+set ignorecase
+set smartcase
+set incsearch
+set hlsearch
